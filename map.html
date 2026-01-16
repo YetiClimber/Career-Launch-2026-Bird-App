@@ -38,8 +38,19 @@
 
         //marker placed on click and removed on second click
         map.on("click", function(e){
-            var marker = new L.Marker([e.latlng.lat, e.latlng.lng],markerOptions).addTo(map).on('click', e=> e.target.remove());
-        })
+            var marker = new L.Marker([e.latlng.lat, e.latlng.lng],markerOptions).addTo(map).on('dblclick', e=> e.target.remove());
+            
+            var textarea = document.createElement("textarea");
+            textarea.value = "Name of Bird:";
+            textarea.style.resize = "none";
+            textarea.style.border = "none";
+            textarea.style.width = "50";
+            textarea.style.height = "25";
+            textarea.addEventListener("keyup", function () {
+                marker.feature.properties["Description"] = textarea.value;
+        });
+            marker.bindPopup(textarea);
+        })  
     </script>
 </body>
 </html>
