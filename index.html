@@ -3,31 +3,76 @@
   <head>
  
     <style>
+      body {
+        background-color: #434343;
+      }
+      form {
+        background-color: white;
+        position: absolute;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        font-family:Arial, Helvetica, sans-serif;
+        margin: 10px;
+        width: 250px;
+        height: 250px;
+      }
+      label {
+        padding: 10px;
+        margin-bottom: 40px;
+      }
+      input {
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+        border-color: lightgrey;
+      }
+      button {
+        background-color: #41E375;
+        color: white;
+        cursor: pointer;
+        font-size: 16px;
+        padding: 10px;
+        margin: 10px;
+        border-color: white;
+        border-radius: 8px;
+        
+      }
+      
     </style>
   </head>
   <body>
 
     <form action="homePage.html" onsubmit="return authenticate()">
-      <label for="username">Username</label>
-      <input
-        id = "username"
-        type = "text"
-        placeholder = "Enter Username"
-        name = "username"
-        required
-      />
-      <label for="password">Password</label>
-      <input
-        id = "password"
-        type = "password"
-        placeholder = "Enter Password"
-        name = "password"
-        required
-      />
+      <div>
+        <label for="username">Username</label>
+      </div>
+      <div>
+        <input
+          id = "username"
+          type = "text"
+          placeholder = "Enter Username"
+          name = "username"
+          required
+        />
+      </div>
+      <div>
+        <label for="password">Password</label>
+      </div>
+      <div>
+        <input
+          id = "password"
+          type = "password"
+          placeholder = "Enter Password"
+          name = "password"
+          required
+        />
+        </div>
       <button type = "submit">Submit</button>
     </form>
-    
-      
     
   <script src="script.js"></script>
 
