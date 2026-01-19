@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bird Journal</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      background: #2a2a2a;
+      padding: 32px 24px 80px;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 48px;
+      max-width: 1400px;
+      margin: 0 auto 48px;
+    }
+
+    .title {
+      font-size: 3.0rem;
+      font-weight: 400;
+      color: #FFFFFF;
+      margin: 0 0 6px 0;
+      letter-spacing: 0.5px;
+    }
+
+    .subtitle {
+      font-size: 1.4rem;
+      color: #FFFFFF;
+      margin: 0;
+      font-weight: 400;
+    }
+
+    .loading {
+      text-align: center;
+      color: #2D5016;
+      font-size: 1.2rem;
+      margin-top: 60px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 80px 20px;
+      color: #5A7C3E;
+    }
+
+    .empty-icon {
+      width: 50%;
+      height: auto;
+      margin-bottom: 20px;
+      opacity: 0.8;
+    }
+
+    .empty-text {
+      font-size: 1.3rem;
+      font-weight: 300;
+      opacity: 0.9;
+      color: white;
+    }
+
+    .sort-controls {
+      display: flex;
+      align-items: center;
+      justify-content: right;
+      gap: 12px;
+      margin-bottom: 28px;
+      max-width: 1400px;
+      margin: 0 auto 28px;
+    }
+
+    .sort-label {
+      font-size: 0.95rem;
+      color: #FFFFFF;
+      font-weight: 500;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .sort-buttons {
+      display: flex;
+      gap: 8px;
+      background: #E4E4E4;
+      padding: 4px;
+      border-radius: 4px;
+      border: 1px solid #E5DFD5;
+    }
+
+    .sort-button {
+      padding: 8px 18px;
+      border-radius: 3px;
+      border: none;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: transparent;
+      color: #666;
+    }
+
+    .sort-button.active {
+      background: #3D5A29;
+      color: #FFFFFF;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: #FFFFFF;
+      border-radius: 3px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      cursor: pointer;
+      transition: box-shadow 0.2s ease;
+      position: relative;
+      border: 1px solid #E5DFD5;
+    }
+
+    .card:hover {
+      box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+    }
+
+    .image-wrapper {
+      position: relative;
+      width: 100%;
+      padding-bottom: 75%;
+      overflow: hidden;
+    }
+
+    .card-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .gradient-overlay {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
+      pointer-events: none;
+    }
+
+    .card-content {
+      padding: 14px;
+    }
+
+    .bird-name {
+      font-size: 1rem;
+      color: #2D5016;
+      font-weight: 600;
+      margin-bottom: 8px;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .location {
+      font-size: 0.8rem;
+      color: #5A7C3E;
+      font-weight: 400;
+      margin-bottom: 6px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .preview-notes {
+      font-size: 0.85rem;
+      color: #666;
+      line-height: 1.4;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .date-badge {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: rgba(255, 255, 255, 0.92);
+      padding: 4px 10px;
+      border-radius: 2px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      color: #2D5016;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      border: 1px solid rgba(45, 80, 22, 0.15);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+
+    .modal {
+      background: #FFFFFF;
+      padding: 28px;
+      border-radius: 4px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+      max-height: 90vh;
+      overflow-y: auto;
+      border: 1px solid #DDD;
+    }
+
+    .modal-large {
+      max-width: 600px;
+    }
+
+    .modal-title {
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: #2D5016;
+      margin: 0 0 20px 0;
+      font-family: Georgia, "Times New Roman", serif;
+    }
+
+    .bird-name-input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 3px;
+      border: 2px solid #3D5A29;
+      font-size: 1.3rem;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 500;
+      color: #2D5016;
+      outline: none;
+      background: #FFF;
+      margin-bottom: 20px;
+    }
+
+    .upload-area {
+      margin-bottom: 20px;
+    }
+
+    .file-input {
+      display: none;
+    }
+
+    .upload-label {
+      display: block;
+      cursor: pointer;
+    }
+
+    .upload-placeholder {
+      border: 2px dashed #BBB;
+      border-radius: 4px;
+      padding: 50px 20px;
+      text-align: center;
+      color: #888;
+      font-size: 0.95rem;
+      transition: border-color 0.2s ease;
+      background: #FAFAFA;
+    }
+
+    .upload-placeholder:hover {
+      border-color: #999;
+    }
+
+    .preview-image {
+      width: 100%;
+      border-radius: 4px;
+      display: block;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #444;
+      margin-bottom: 6px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .input {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 3px;
+      border: 1px solid #CCC;
+      font-size: 0.95rem;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      transition: border-color 0.2s ease;
+      outline: none;
+      background: #FFF;
+    }
+
+    .input:focus {
+      border-color: #3D5A29;
+    }
+
+    .textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 10px 12px;
+      border-radius: 3px;
+      border: 1px solid #CCC;
+      font-size: 0.95rem;
+      resize: vertical;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      transition: border-color 0.2s ease;
+      outline: none;
+      background: #FFF;
+      line-height: 1.5;
+    }
+
+    .textarea:focus {
+      border-color: #3D5A29;
+    }
+
+    .modal-buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .button {
+      padding: 10px 20px;
+      border-radius: 3px;
+      border: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    .button-save {
+      background: #3D5A29;
+      color: #FFFFFF;
+    }
+
+    .button-save:hover {
+      background: #2D4519;
+    }
+
+    .button-save:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .button-cancel {
+      background: #E8E4DD;
+      color: #555;
+    }
+
+    .button-cancel:hover {
+      background: #D8D4CD;
+    }
+
+    .button-delete {
+      background: #A64D3F;
+      color: #FFFFFF;
+    }
+
+    .button-delete:hover {
+      background: #963D2F;
+    }
+
+    .full-image {
+      width: 100%;
+      border-radius: 3px;
+      margin-bottom: 18px;
+      display: block;
+      border: 1px solid #DDD;
+    }
+
+    .fab {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: none;
+      background: #3D5A29;
+      color: #FFFFFF;
+      font-size: 1.8rem;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      z-index: 999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 300;
+    }
+
+    .fab:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1 class="title">Bird Journal</h1>
+    <p class="subtitle">Number of sightings: <span id="entryCount">0</span></p>
+  </div>
+
+  <div id="loading" class="loading">Loading...</div>
+
+  <div id="emptyState" class="empty-state hidden">
+    <img class="empty-icon" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSU8OB0ldCOud6hi0MQuLWpFmbJ7GWIoqC0rw&s" alt="Sad Bird">
+    <p class="empty-text">No sightings yet. Log your first bird!</p>
+  </div>
+
+  <div id="sortControls" class="sort-controls hidden">
+    <div class="sort-label">Sort by:</div>
+    <div class="sort-buttons">
+      <button class="sort-button active" data-sort="date">Date</button>
+      <button class="sort-button" data-sort="name">Name</button>
+      <button class="sort-button" data-sort="location">Location</button>
+    </div>
+  </div>
+
+  <div id="grid" class="grid"></div>
+
+  <div id="addModal" class="overlay hidden">
+    <div class="modal">
+      <input type="text" id="newBirdName" class="bird-name-input" placeholder="Bird name...">
+      
+      <div class="upload-area">
+        <input type="file" id="imageUpload" class="file-input" accept="image/*">
+        <label for="imageUpload" class="upload-label">
+          <div id="uploadPlaceholder" class="upload-placeholder">
+            <div> </div>
+            <div>Click to upload bird photo</div>
+          </div>
+          <img id="previewImage" class="preview-image hidden" alt="Preview">
+        </label>
+      </div>
+
+      <textarea id="newNotes" class="textarea" placeholder="Notes about the bird..."></textarea>
+
+      <div class="modal-buttons">
+        <button class="button button-cancel" onclick="cancelAddModal()">Cancel</button>
+        <button class="button button-save" id="continueButton" onclick="continueToDetails()" disabled>Continue</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="detailsModal" class="overlay hidden">
+    <div class="modal">
+      <h2 class="modal-title">Confirm Details</h2>
+
+      <div class="form-group">
+        <label class="label">Location</label>
+        <input type="text" id="location" class="input" placeholder="Where did you spot this bird?">
+      </div>
+
+      <div class="form-group">
+        <label class="label">Date</label>
+        <input type="date" id="date" class="input">
+      </div>
+
+      <div class="modal-buttons">
+        <button class="button button-cancel" onclick="backToAddModal()">Back</button>
+        <button class="button button-save" onclick="saveEntry()">Save Entry</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- View/Edit Entry Modal -->
+  <div id="viewModal" class="overlay hidden">
+    <div class="modal modal-large">
+      <input type="text" id="editBirdName" class="bird-name-input" placeholder="Bird name...">
+      
+      <img id="viewImage" class="full-image" alt="Bird sighting">
+
+      <div class="form-group">
+        <label class="label">Location</label>
+        <input type="text" id="editLocation" class="input" placeholder="Location">
+      </div>
+
+      <div class="form-group">
+        <label class="label">Date</label>
+        <input type="date" id="editDate" class="input">
+      </div>
+
+      <div class="form-group">
+        <label class="label">Notes</label>
+        <textarea id="editNotes" class="textarea" placeholder="Add your observations..."></textarea>
+      </div>
+
+      <div class="modal-buttons">
+        <button class="button button-delete" onclick="deleteEntry()">Delete</button>
+        <div class="button-group">
+          <button class="button button-cancel" onclick="closeViewModal()">Close</button>
+          <button class="button button-save" onclick="updateEntry()">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="fab" onclick="openAddModal()">+</button>
+
+  <script>
+    let entries = [];
+    let currentImage = null;
+    let currentEntryId = null;
+    let sortBy = 'date';
+
+    function loadEntries() {
+      const saved = localStorage.getItem('birdJournalEntries');
+      if (saved) {
+        try {
+          entries = JSON.parse(saved);
+        } catch (error) {
+          console.log('Error loading entries');
+        }
+      }
+      document.getElementById('loading').classList.add('hidden');
+      renderEntries();
+    }
+
+    function saveEntries() {
+      try {
+        localStorage.setItem('birdJournalEntries', JSON.stringify(entries));
+      } catch (error) {
+        if (error.name === 'QuotaExceededError') {
+          alert('You have reached the storage limit! Your last change was not saved. Please delete some entries to free up space.');
+        } else {
+          console.error('Error saving entries:', error);
+        }
+      }
+    }
+
+    function getSortedEntries() {
+      const sorted = [...entries];
+      
+      switch(sortBy) {
+        case 'date':
+          return sorted.sort((a, b) => {
+            const dateA = a.date ? new Date(a.date) : new Date(a.id);
+            const dateB = b.date ? new Date(b.date) : new Date(b.id);
+            return dateB - dateA;
+          });
+        case 'name':
+          return sorted.sort((a, b) => {
+            const nameA = (a.birdName || '').toLowerCase();
+            const nameB = (b.birdName || '').toLowerCase();
+            if (!nameA && !nameB) return 0;
+            if (!nameA) return 1;
+            if (!nameB) return -1;
+            return nameA.localeCompare(nameB);
+          });
+        case 'location':
+          return sorted.sort((a, b) => {
+            const locA = (a.location || '').toLowerCase();
+            const locB = (b.location || '').toLowerCase();
+            if (!locA && !locB) return 0;
+            if (!locA) return 1;
+            if (!locB) return -1;
+            return locA.localeCompare(locB);
+          });
+        default:
+          return sorted;
+      }
+    }
+
+    function renderEntries() {
+      document.getElementById('entryCount').textContent = entries.length;
+      
+      const grid = document.getElementById('grid');
+      const emptyState = document.getElementById('emptyState');
+      const sortControls = document.getElementById('sortControls');
+      
+      if (entries.length === 0) {
+        grid.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        sortControls.classList.add('hidden');
+        return;
+      }
+      
+      emptyState.classList.add('hidden');
+      sortControls.classList.remove('hidden');
+      
+      const sortedEntries = getSortedEntries();
+      grid.innerHTML = sortedEntries.map(entry => {
+        const date = entry.date 
+          ? new Date(entry.date + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+          : new Date(entry.id).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        
+        const previewNotes = entry.notes 
+          ? (entry.notes.substring(0, 60) + (entry.notes.length > 60 ? '...' : ''))
+          : '';
+        
+        return `
+          <div class="card" onclick="openViewModal(${entry.id})">
+            <div class="image-wrapper">
+              <img src="${entry.image}" alt="Bird sighting" class="card-image">
+              <div class="gradient-overlay"></div>
+            </div>
+            <div class="card-content">
+              ${entry.birdName ? `<div class="bird-name">${entry.birdName}</div>` : ''}
+              ${entry.location ? `<div class="location">${entry.location}</div>` : ''}
+              ${previewNotes ? `<div class="preview-notes">${previewNotes}</div>` : ''}
+            </div>
+            <div class="date-badge">${date}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    document.getElementById('imageUpload').addEventListener('change', function(e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = function() {
+          const img = new Image();
+          img.onload = function() {
+            const canvas = document.createElement('canvas');
+            let width = img.width;
+            let height = img.height;
+            
+            const maxDimension = 1200;
+            if (width > maxDimension || height > maxDimension) {
+              if (width > height) {
+                height = (height / width) * maxDimension;
+                width = maxDimension;
+              } else {
+                width = (width / height) * maxDimension;
+                height = maxDimension;
+              }
+            }
+            
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(img, 0, 0, width, height);
+            
+            currentImage = canvas.toDataURL('image/jpeg', 0.7);
+            document.getElementById('uploadPlaceholder').classList.add('hidden');
+            document.getElementById('previewImage').src = currentImage;
+            document.getElementById('previewImage').classList.remove('hidden');
+            document.getElementById('continueButton').disabled = false;
+          };
+          img.src = reader.result;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+    function openAddModal() {
+      document.getElementById('addModal').classList.remove('hidden');
+    }
+
+    function cancelAddModal() {
+      document.getElementById('addModal').classList.add('hidden');
+      document.getElementById('newBirdName').value = '';
+      document.getElementById('newNotes').value = '';
+      document.getElementById('imageUpload').value = '';
+      document.getElementById('uploadPlaceholder').classList.remove('hidden');
+      document.getElementById('previewImage').classList.add('hidden');
+      document.getElementById('continueButton').disabled = true;
+      currentImage = null;
+    }
+
+    function continueToDetails() {
+      if (!currentImage) return;
+      document.getElementById('addModal').classList.add('hidden');
+      document.getElementById('detailsModal').classList.remove('hidden');
+      document.getElementById('date').value = new Date().toISOString().split('T')[0];
+    }
+
+    function backToAddModal() {
+      document.getElementById('detailsModal').classList.add('hidden');
+      document.getElementById('addModal').classList.remove('hidden');
+    }
+
+    function saveEntry() {
+      const newEntry = {
+        id: Date.now(),
+        image: currentImage,
+        notes: document.getElementById('newNotes').value,
+        birdName: document.getElementById('newBirdName').value || 'No Name',
+        location: document.getElementById('location').value || 'No Location',
+        date: document.getElementById('date').value
+      };
+
+      entries.unshift(newEntry);
+      saveEntries();
+      renderEntries();
+
+      document.getElementById('detailsModal').classList.add('hidden');
+      document.getElementById('newBirdName').value = '';
+      document.getElementById('newNotes').value = '';
+      document.getElementById('location').value = '';
+      document.getElementById('date').value = '';
+      document.getElementById('imageUpload').value = '';
+      document.getElementById('uploadPlaceholder').classList.remove('hidden');
+      document.getElementById('previewImage').classList.add('hidden');
+      document.getElementById('continueButton').disabled = true;
+      currentImage = null;
+    }
+
+    function openViewModal(id) {
+      const entry = entries.find(e => e.id === id);
+      if (!entry) return;
+
+      currentEntryId = id;
+      document.getElementById('viewImage').src = entry.image;
+      document.getElementById('editBirdName').value = entry.birdName || 'No Name';
+      document.getElementById('editLocation').value = entry.location || 'No Location';
+      document.getElementById('editDate').value = entry.date || '';
+      document.getElementById('editNotes').value = entry.notes || '';
+      document.getElementById('viewModal').classList.remove('hidden');
+    }
+
+    function closeViewModal() {
+      document.getElementById('viewModal').classList.add('hidden');
+      currentEntryId = null;
+    }
+
+    function updateEntry() {
+      const index = entries.findIndex(e => e.id === currentEntryId);
+      if (index === -1) return;
+
+      entries[index] = {
+        ...entries[index],
+        birdName: document.getElementById('editBirdName').value,
+        location: document.getElementById('editLocation').value,
+        date: document.getElementById('editDate').value,
+        notes: document.getElementById('editNotes').value
+      };
+
+      saveEntries();
+      renderEntries();
+      closeViewModal();
+    }
+
+    function deleteEntry() {
+      if (!confirm('Delete this entry?')) return;
+
+      entries = entries.filter(e => e.id !== currentEntryId);
+      saveEntries();
+      renderEntries();
+      closeViewModal();
+    }
+
+    document.querySelectorAll('.sort-button').forEach(button => {
+      button.addEventListener('click', function() {
+        document.querySelectorAll('.sort-button').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        sortBy = this.dataset.sort;
+        renderEntries();
+      });
+    });
+
+    document.querySelectorAll('.overlay').forEach(overlay => {
+      overlay.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.add('hidden');
+          if (this.id === 'viewModal') {
+            currentEntryId = null;
+          } else if (this.id === 'addModal') {
+            cancelAddModal();
+          }
+        }
+      });
+    });
+
+    loadEntries();
+  </script>
+</body>
+</html>
