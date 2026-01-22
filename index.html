@@ -1,60 +1,129 @@
 <!DOCTYPE html>
 <html lang = "en">
   <head>
- 
+    <title>Log in</title>
     <style>
+      @import url('https://fonts.googleapis.com/css2?family=BBH+Bartle&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+      @keyframes fade-in{
+          0%{opacity: 0;}
+          100%{opacity: 1;}
+      }
+      @keyframes fade-side{
+          0%{opacity: 0; transform: translateX(-30px);}
+          100%{opacity: 1; transform: translateX(0px);}
+      }
+      .header-bar {
+        width: 100%;
+        height: 30px;
+        background-color: #41E375;
+        margin-bottom: 130px;
+        font-family: "BBH Bartle", sans-serif;
+        font-weight: 400;
+        font-style: normal;
+        padding-left: 20px;
+        padding-top: 10px;
+        text-align: left;
+      }
       body {
-        background-color: #434343;
-        font-family: Arial, Helvetica, sans-serif;
-        color: white;
-        margin: 0;
-        padding: 0;
-        text-align: center;
-        }
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          background-color: #434343;
+          font-family: "Bricolage Grotesque", sans-serif;
+          color: white;
+          margin: 0;
+          padding: 0;
+          text-align: center;
+      }
       form {
+        margin-top: 40px;
         background-color: #2a2a2a;
-        position: absolute;
-        top: 40%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        padding: 20px;
+        padding: 30px 20px;
         border-radius: 8px;
         text-align: center;
-        font-family:Arial, Helvetica, sans-serif;
+        font-family:"Bricolage Grotesque", sans-serif;
         margin: 10px;
-        width: 250px;
-        height: 250px;
+        width: 280px;
+        animation: fade-in 1.5s;
       }
-      label {
-        padding: 10px;
-        margin-bottom: 10px;
+
+      h1 {
+        font-size: 65px;
+        font-weight: 400;
+        position: relative;
+        display: inline;
+      }
+
+      p {
+        display: block;
+        color: #41E375;
+        font-size: 20px;
       }
       input {
         padding: 10px;
         margin-bottom: 20px;
         border-radius: 4px;
-        border-color: lightgrey;
+        width: 70%;
+        border: none;
+        font-family:"Bricolage Grotesque", sans-serif;
+        font-size: 18px;
+        
       }
       button {
         background-color: #41E375;
         color: white;
         cursor: pointer;
-        font-size: 16px;
+        font-size: 18px;
         padding: 10px;
         margin: 10px;
         border: none;
         border-radius: 8px;
+        width: 40%;
+        font-family:"Bricolage Grotesque", sans-serif;
+
         
       }
+
+      .container {
+        border-radius: 8px;
+        display: flex;
+        justify-content: center;
+        gap: 40px;
+        flex-wrap: wrap;
+        width: 90%;
+        box-sizing: border-box;
+      }
+
+      .box{
+        display: inline-block;
+        padding: 20px;
+        width: 400px;
+        text-align: right;
+      }
+
+      .side {
+        animation: fade-side 1s;
+        animation-timing-function: ease;
+      }
+
       
     </style>
   </head>
   <body>
+    <div class="header-bar">BIRDQUEST</div>
+
+    <div class="container">
+      <div class="box side">
+        <p style="color:#434343;">spacing</p>
+      
+        <h1>What is BirdQuest?</h1>
+        <hr>
+        <p> BirdQuest is a simple tool meant for birwatchers. Record your birding finds and win badges for your findings!</p>
+      </div>
+      <div class="box">
 
     <form action="homePage.html" onsubmit="return authenticate()">
-      <div>
-        <label for="username">Username</label>
-      </div>
+      <p>Enter username and password to log in!</p>
       <div>
         <input
           id = "username"
@@ -65,9 +134,6 @@
         />
       </div>
       <div>
-        <label for="password">Password</label>
-      </div>
-      <div>
         <input
           id = "password"
           type = "password"
@@ -76,10 +142,11 @@
           required
         />
         </div>
-      <button type = "submit">Submit</button>
+      <button type = "submit">Log in</button>
     </form>
-    
+    </div>
   <script src="script.js"></script>
+  </div>
 
   </body>
 </html>
