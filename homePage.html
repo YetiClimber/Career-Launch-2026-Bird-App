@@ -1,29 +1,35 @@
 <!DOCTYPE html>
 <html lang = "en">
   <head>
- 
+    <title>Bird Quest</title>
+    
     <style>
-        body {
-            background-color: #434343;
-            font-family: Arial, Helvetica, sans-serif;
-            color: white;
-            margin: 0;
-            padding: 0;
-            text-align: center;
-        }
-      .username {
-        font-weight: bold;
+      @import url('https://fonts.googleapis.com/css2?family=BBH+Bartle&family=Bricolage+Grotesque:opsz,wght@12..96,200..800&display=swap');
+      
+      @keyframes fade-in{
+          0%{opacity: 0; transform: translateY(15px);}
+          100%{opacity: 1; transform: translateY(0px);}
       }
-      .unpadded {
-        margin: 0;
-        padding: 0;
+
+      body {
+          background-color: #434343;
+          font-family: "Bricolage Grotesque", sans-serif;
+          color: white;
+          margin: 0;
+          padding: 0;
+          text-align: center;
       }
 
       .header-bar {
         width: 100%;
-        height: 40px;
+        height: 30px;
         background-color: #41E375;
-        margin-bottom: 50px;
+        margin-bottom: 100px;
+        font-family: "BBH Bartle", sans-serif;
+        font-weight: 400;
+        padding-left: 20px;
+        padding-top: 10px;
+        text-align: left;
       }
       .container {
         display: flex;
@@ -31,6 +37,7 @@
         gap: 20px;
         border: 2px;
         padding: 10px;
+        margin-top: 60px;
       }
 
       .box {
@@ -45,34 +52,173 @@
         padding: 40px;
         border-radius: 20px;
         cursor: pointer;
+        opacity: 0;
+        animation: fade-in 0.8s ease-out forwards;
+        transition: transform 0.5s ease, background-color 0.5s ease;
+        will-change: transform, opacity;
+        font-weight: 500;
+      }
+
+      .box:hover {
+        background-color:#FF3747;
       }
 
       p {
         font-size: 24px;
+        color:#41E375;
+        font-weight: 300; 
       }
 
       h1 {
         font-size: 50px;
+        font-weight: 400;
+        position: relative;
+        animation: fade-in 1.5s;
+        animation-timing-function: ease-out;
+        display: inline;
       }
+
+      h1 span {
+        font-size: 50px;
+        font-weight: 600;
+        color:#41E375;
+        position: relative;
+        animation: fade-in 1.5s;
+        animation-timing-function: ease-out;
+        display: inline;
+      }
+
+
+      .name {
+        font-weight: 700;
+        color: #41E375;
+      }
+
+      .badges-box {
+        animation-delay: 0.5s;
+      }
+
+      .journal-box {
+        animation-delay: 1s;
+      }
+
+      .map-box {
+        animation-delay: 1.5s;
+      }
+
+      .accButton {
+        align-items: center;
+        position: fixed;
+        top: 55px;
+        right: 20px;
+        background: #107a52;
+        color: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        transition: 0.5s;
+        overflow: hidden;
+        font-size: 24px;
+      }
+      .accButton:hover{
+        width: 230px;
+      }
+
+      .accButton:before{
+        content: "";
+        position: absolute;
+        right: 25px;
+        width: 12px;
+        height: 12px;
+        border-top: 3px solid white;
+        border-right: 3px solid white;
+        transform: rotate(45deg);
+      }
+      .accButton:hover:before{
+        transform: rotate(45deg) translate(50px, -50px);
+      }
+
+      .accButton:after{
+        content: "";
+        position: absolute;
+        left: -50px;
+        width: 12px;
+        height: 12px;
+        border-top: 3px solid white;
+        border-right: 3px solid white;
+        transform: rotate(45deg) translate(-50px, 50px);
+        transition: opacity 0.3s ease, transform 0.3s ease;
+      }
+
+      .accButton:hover::after{
+        transform: rotate(45deg) translate(50px, -50px);
+        transition-delay: 0.1s;
+      }
+
+      .accButton span{
+        visibility: hidden;
+        opacity: 0;
+        white-space: nowrap;
+        transition: 0.5s;
+        transform: translate(-30px);
+      }
+
+      .accButton:hover span{
+        visibility: visible;
+        opacity: 1;
+        transform: translate(10px);
+      }
+
+      .accButton img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+
       
     </style>
   </head>
   <body>
+    <!-- Header -->
+    <div class="header-bar">BIRDQUEST</div>
+    <!-- Account Button -->
 
-    <div class="header-bar"></div>
-    <h1 id="output_welcome"></h1>
-    <p id="output_birdnum"></p>
-    <script src = "script.js"></script>
+    <a href="account.html" class = "accButton">
+      <img id="mini-pfp" src="https://media.istockphoto.com/id/2171382633/vector/user-profile-icon-anonymous-person-symbol-blank-avatar-graphic-vector-illustration.jpg?s=612x612&w=0&k=20&c=ZwOF6NfOR0zhYC44xOX06ryIPAUhDvAajrPsaZ6v1-w=" alt="Profile">
+      <span>Account</span>
+    </a>
 
-    <div class = "container">  
-      <a href="badges.html" class = "badges-box">
-        <div class = "box badges-box">Badges</div>
-      </a>
-      <div class = "box">Journal</div>
-      <a href="map.html" class = "map-box">
-        <div class = "box map-box">Map</div>
-      </a> 
+      <h1>Welcome to BirdQuest, <span id="output-welcome"></span>!</h1>
+
+    <div>
+
+      <!-- Buttons to different tabs -->
+      <div class = "container">  
+        <a href="badges.html">
+          <div class = "box badges-box">Badges
+            <p>See what achievements you have!</p>
+            <div class = "badge-icon"></div>
+          </div>
+        </a>
+        <a href="journal.html">
+          <div class = "box journal-box">Journal
+            <p>Check out your logged entries!</p>
+            <div class = "journal-icon">
+            </div>
+          </div>
+        </a>
+        <a href="map.html">
+          <div class = "box map-box">Map
+            <p>Mark down where you found a bird!</p>
+            <div class = "map-icon"></div>
+          </div>
+        </a> 
+      </div>
     </div>
-
+    <script src = "script.js"></script>
   </body>
 </html>
